@@ -1,0 +1,11 @@
+.select_wrapper {
+  // :global .react-select {
+  // }
+
+  input,
+  input:focus {
+    outline: none;
+    border: none;
+    box-shadow: none;
+  }
+}
