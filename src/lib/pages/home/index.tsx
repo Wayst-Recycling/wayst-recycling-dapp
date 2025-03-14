@@ -98,7 +98,9 @@ const Home = () => {
             />
             <div>
               <p className="text-xs">Hello, 👋🏿</p>
-              <p className="text-base font-medium">Welcome to Carus!</p>
+              <p className="text-base font-medium">
+                Welcome to Wayst Recycling!
+              </p>
             </div>
           </div>
           <div className="mt-4 flex flex-col items-center space-y-5">

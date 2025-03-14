@@ -8,8 +8,8 @@ import tsConfigPaths from 'vite-tsconfig-paths';
 const pwaOptions: Partial<VitePWAOptions> = {
   registerType: 'autoUpdate',
   manifest: {
-    short_name: 'Carus',
-    name: 'Carus',
+    short_name: 'Wayst',
+    name: 'Wayst Recycling',
     lang: 'en',
     start_url: '/',
     background_color: '#FFFFFF',
