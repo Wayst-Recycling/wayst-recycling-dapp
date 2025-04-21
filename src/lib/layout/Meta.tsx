@@ -1,12 +1,15 @@
 import { Helmet } from 'react-helmet';
 
-const APP_NAME = 'vite-react-tailwind-starter';
+const APP_NAME = 'Wayst Recycling';
 
 const Meta = () => {
   return (
     <Helmet>
-      <title>Vite React Tailwind Starter</title>
-      <meta name="description" content="Vite React Tailwind Starter Template" />
+      <title>Wayst Recycling</title>
+      <meta
+        name="description"
+        content="Schedule waste pickups or drop off recyclables with ease, earn cUSD rewards instantly, and build a greener future—one action at a time"
+      />
 
       <meta name="application-name" content={APP_NAME} />
       <meta name="apple-mobile-web-app-capable" content="yes" />

@@ -1,3 +1,4 @@
+import type { RPaginated } from '../api.types';
 import http from '../http';
 import type { GeneralApiResponse } from '@/lib/types';
 
@@ -6,11 +7,11 @@ import type { Schedule, TLocation } from './types';
 export const postSchedulePickup = async (data: {
   oxAddress: string;
   material: string;
-  material_amount: number;
-  container_amount: number;
+  materialAmount: number;
+  containerAmount: number;
   address: string;
   date: string;
-  country_code: string;
+  dialCode: string;
   phone: string;
 }): Promise<GeneralApiResponse<unknown>> => {
   const res = await http.post('/schedule/pickup', data);
@@ -20,11 +21,11 @@ export const postSchedulePickup = async (data: {
 export const postScheduleDropoff = async (data: {
   oxAddress: string;
   material: string;
-  material_amount: number;
-  container_amount: number;
+  materialAmount: number;
+  containerAmount: number;
   address: string;
   date: string;
-  country_code: string;
+  dialCode: string;
   phone: string;
 }): Promise<GeneralApiResponse<unknown>> => {
   const res = await http.post('/schedule/dropoff', data);
@@ -36,14 +37,14 @@ export const getSchedules = async (ox: string): Promise<Schedule[]> => {
   return res.data.data;
 };
 
-export const getDropoffLocations = async (): Promise<TLocation[]> => {
-  const res = await http.get(`/admin/dropoff/location`);
+export const getDropoffLocations = async (): Promise<RPaginated<TLocation>> => {
+  const res = await http.get(`/location`);
   return res.data.data;
 };
 
 export const getTotalEarning = async (
   ox: string
 ): Promise<{ total: number }> => {
-  const res = await http.get(`/transactions/${ox}/totalEarnings`);
+  const res = await http.get(`/transaction/${ox}/total-earnings`);
   return res.data.data;
 };

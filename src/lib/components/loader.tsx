@@ -1,7 +1,9 @@
+import { FaSpinner } from 'react-icons/fa6';
+
 const Loader = () => {
   return (
     <div className="mx-auto flex">
-      <img src="/assets/loader.gif" alt="loader" className="h-24" />
+      <FaSpinner className="h-24 animate-spin" />
     </div>
   );
 };

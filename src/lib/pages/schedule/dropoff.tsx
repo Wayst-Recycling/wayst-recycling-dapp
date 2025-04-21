@@ -108,7 +108,7 @@ const Dropoff = () => {
     isPending: isLoadingDropoffLocations,
   } = useGetDropoffLocations();
 
-  const locations = dropoffLocationsResponse?.map((location) => ({
+  const locations = dropoffLocationsResponse?.data.map((location) => ({
     value: location.id,
     label: `${location.address}, ${location.region}, ${location.state}`,
   }));

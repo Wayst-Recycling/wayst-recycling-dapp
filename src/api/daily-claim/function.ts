@@ -6,7 +6,7 @@ import type { Transaction } from './types';
 export const postClaimDailyReward = async (data: {
   oxAddress: string;
 }): Promise<GeneralApiResponse<unknown>> => {
-  const res = await http.post('/rewards/daily-claim', data);
+  const res = await http.post('/transaction/daily-claim', data);
   return res.data;
 };
 

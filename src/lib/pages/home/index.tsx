@@ -15,7 +15,7 @@ import { formatcUsd } from '@/lib/utils/format';
 const Home = () => {
   const { address } = useAccount();
   const { data: transactions, isPending: isLoadingGetTransactions } =
-    useGetTransactions(address as string);
+    useGetTransactions({ ox: address as string });
 
   const { data: totalEarning, isPending: isLoadingTotalEarning } =
     useGetTotalEarning(address as string);
@@ -170,7 +170,7 @@ const Home = () => {
             </div>
             {transactions &&
               !isLoadingGetTransactions &&
-              transactions
+              transactions.data
                 .slice(0, 3)
                 .map((transaction) => (
                   <TransactionCard transaction={transaction} />

@@ -6,7 +6,8 @@ import { IoIosArrowRoundBack } from 'react-icons/io';
 import { useNavigate } from 'react-router-dom';
 import { useAccount, useWriteContract } from 'wagmi';
 
-import { useClaimDailyReward, useGetDailyClaim } from '@/api/daily-claim';
+import { useClaimDailyReward } from '@/api/daily-claim';
+import { useGetTransactions } from '@/api/transaction';
 import { CARUS, CARUSABI } from '@/contract/contractAddress';
 import Button from '@/lib/components/buttons/button';
 import { cn } from '@/lib/styles/utils';
@@ -17,7 +18,13 @@ const DailyClaim = () => {
   const { mutate, isPending: isLoadingClaimReward } = useClaimDailyReward();
   const { address } = useAccount();
   const { data: dailyClaimResponse, isPending: isLoadingGetDailyClaim } =
-    useGetDailyClaim(address as string);
+    useGetTransactions({
+      ox: address as string,
+      params: {
+        type: 'dailyClaim',
+      },
+    });
+
   const {
     writeContract,
     isPending: isLoadingWriteContract,
@@ -126,7 +133,7 @@ const DailyClaim = () => {
         {dailyClaimResponse &&
           !isLoadingGetDailyClaim &&
           dailyClaimResponse.data.map((item) => (
-            <div key={item.transaction_id} className="mt-3">
+            <div key={item.id} className="mt-3">
               <p className="text-xs font-medium capitalize text-gray-400">
                 {moment(item.createdAt).startOf('second').fromNow()}
               </p>

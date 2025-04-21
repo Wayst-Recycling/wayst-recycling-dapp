@@ -23,7 +23,7 @@ const TransactionCard = ({ transaction }: { transaction: Transaction }) => {
       return transaction.schedule?.address as string;
     }
     if (transaction.type === 'dropoff') {
-      const dropoffAddress = locations?.find(
+      const dropoffAddress = locations?.data.find(
         (x) => x.id === transaction.schedule?.address
       );
       return `${dropoffAddress?.address}, ${dropoffAddress?.region}, ${dropoffAddress?.state}`;
@@ -94,7 +94,7 @@ const TransactionCard = ({ transaction }: { transaction: Transaction }) => {
           </div>
         )}
         {transaction.type === 'daily claim' && (
-          <div key={transaction.transactionId} className="mt-3 text-start">
+          <div key={transaction.id} className="mt-3 text-start">
             <div className="mt-1 flex items-center justify-between rounded-lg bg-white p-3">
               <div className="flex items-center space-x-2">
                 <img
@@ -166,13 +166,13 @@ const TransactionCard = ({ transaction }: { transaction: Transaction }) => {
             <div className="flex flex-col items-start space-y-1">
               <p className="text-xs text-gray-400">NUMBER OF WASTE</p>
               <p className="text-sm capitalize">
-                {transaction.schedule?.material_amount}
+                {transaction.schedule?.materialAmount}
               </p>
             </div>
             <div className="flex flex-col items-start space-y-1">
               <p className="text-xs text-gray-400">NUMBER OF BAGS</p>
               <p className="text-sm capitalize">
-                {transaction.schedule?.container_amount}
+                {transaction.schedule?.containerAmount}
               </p>
             </div>
             <div className="flex flex-col items-start space-y-1">
@@ -182,8 +182,7 @@ const TransactionCard = ({ transaction }: { transaction: Transaction }) => {
             <div className="flex flex-col items-start space-y-1">
               <p className="text-xs text-gray-400">CONTACT NUMBER</p>
               <p className="text-sm capitalize">
-                +{transaction.schedule?.country_code}{' '}
-                {transaction.schedule?.phone}
+                +{transaction.schedule?.dialCode} {transaction.schedule?.phone}
               </p>
             </div>
             <div className="flex flex-col items-start space-y-1">

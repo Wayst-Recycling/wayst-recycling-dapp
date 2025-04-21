@@ -14,7 +14,7 @@ const History = () => {
   const navigate = useNavigate();
 
   const { data: transactions, isPending: isLoadingGetTransactions } =
-    useGetTransactions(address as string);
+    useGetTransactions({ ox: address as string });
 
   return (
     <div className="mt-5">
@@ -34,7 +34,7 @@ const History = () => {
       <div className="mt-10 flex flex-col items-center space-y-2">
         {transactions &&
           !isLoadingGetTransactions &&
-          transactions.map((transaction) => (
+          transactions.data.map((transaction) => (
             <TransactionCard transaction={transaction} />
           ))}
         {!transactions && isLoadingGetTransactions && <Loader />}
