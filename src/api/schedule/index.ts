@@ -59,10 +59,10 @@ export const useGetDropoffLocations = () => {
   return { data, isPending };
 };
 
-export const useGetTotalEarning = (ox: string) => {
+export const useGetTotalEarning = () => {
   const { data, isPending } = useQuery({
     queryKey: [GET_TOTAL_EARNING_KEY],
-    queryFn: () => getTotalEarning(ox),
+    queryFn: () => getTotalEarning(),
   });
 
   return { data, isPending };

@@ -5,10 +5,8 @@ import { GET_TRANSACTIONS_KEY } from './types';
 
 // eslint-disable-next-line import/prefer-default-export
 export const useGetTransactions = ({
-  ox,
   params,
 }: {
-  ox: string;
   params?: {
     type?: string;
     page?: number;
@@ -17,7 +15,7 @@ export const useGetTransactions = ({
 }) => {
   const { data, isPending } = useQuery({
     queryKey: [GET_TRANSACTIONS_KEY],
-    queryFn: () => getTransactions({ ox, params }),
+    queryFn: () => getTransactions({ params }),
   });
 
   return { data, isPending };

@@ -11,6 +11,7 @@ import { emitCommingSoonToast } from '@/lib/components/comingSoonToast';
 import Input from '@/lib/components/input/input';
 import InputLabel from '@/lib/components/input/inputLabel';
 import Select from '@/lib/components/input/select';
+import { handleApiError } from '@/lib/utils/error-handler';
 import { formatAmount, removeNonDigit } from '@/lib/utils/format';
 import {
   PICKUP_MATERIAL,
@@ -132,16 +133,12 @@ const Dropoff = () => {
             formik.resetForm();
             toast.success(res.message);
           },
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          onError: (res: any) => {
-            if (res.name === 'AxiosError') {
-              return toast.error(res.response.data.message);
-            }
-            return toast.error(res.name);
+          onError: (err) => {
+            handleApiError(err, 'Something went wrong');
           },
         });
-      } catch {
-        toast.error('Something went wrong');
+      } catch (err) {
+        handleApiError(err, 'Something went wrong');
       }
     },
   });

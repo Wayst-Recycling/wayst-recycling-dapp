@@ -1,15 +1,17 @@
 import { useFormik } from 'formik';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { IoIosArrowRoundBack } from 'react-icons/io';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAccount } from 'wagmi';
 
 import { useSchedulePickup } from '@/api/schedule';
+import { useDisclosure } from '@/hooks/useDisclosure';
 import Button from '@/lib/components/buttons/button';
 import { emitCommingSoonToast } from '@/lib/components/comingSoonToast';
 import Input from '@/lib/components/input/input';
-import InputLabel from '@/lib/components/input/inputLabel';
+import Select from '@/lib/components/input/select';
+import { handleApiError } from '@/lib/utils/error-handler';
 import { formatAmount, removeNonDigit } from '@/lib/utils/format';
 import {
   PICKUP_MATERIAL,
@@ -18,15 +20,13 @@ import {
 import { setPickupMaterial } from '@/store/slices/schedule';
 import { useAppDispatch, useAppSelector } from '@/store/store';
 
+import AddressDrawer from './components/AddressDrawer';
 import MaterialSelectItem from './components/materialSelectItem';
 import {
   PICKUP_ADDRESS_KEY,
   PICKUP_CONTAINER_AMOUNT_KEY,
-  PICKUP_COUNTRY_CODE_KEY,
-  PICKUP_DATE_KEY,
   PICKUP_MATERIAL_AMOUNT_KEY,
   PICKUP_MATERIAL_KEY,
-  PICKUP_PHONE_KEY,
   PICKUP_WALLET_ADDRESS_KEY,
   pickupInitialValues,
   pickupValidationSchema,
@@ -40,7 +40,6 @@ const Pickup = () => {
   //   };
   const { address } = useAccount();
 
-  const [minDate, setMinDate] = useState('');
   const materials: MaterialCategory[] = [
     {
       label: 'Plastic',
@@ -102,6 +101,8 @@ const Pickup = () => {
     (state) => state[SCHEDULE_REDUCER_PATH]
   );
 
+  const addressDrawerProps = useDisclosure();
+
   const formik = useFormik({
     initialValues: pickupInitialValues,
     validationSchema: pickupValidationSchema,
@@ -121,16 +122,12 @@ const Pickup = () => {
             formik.resetForm();
             toast.success(res.message);
           },
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          onError: (res: any) => {
-            if (res.name === 'AxiosError') {
-              return toast.error(res.response.data.message);
-            }
-            return toast.error(res.name);
+          onError: (err) => {
+            handleApiError(err, 'Something went wrong');
           },
         });
-      } catch {
-        toast.error('Something went wrong');
+      } catch (err) {
+        handleApiError(err, 'Something went wrong');
       }
     },
   });
@@ -141,17 +138,6 @@ const Pickup = () => {
       ...formik.getFieldMeta(id),
     };
   }
-
-  useEffect(() => {
-    const today = new Date();
-
-    const nextDay = new Date(today);
-    nextDay.setDate(today.getDate() + 1);
-
-    const formattedNextDay = nextDay.toISOString().split('T')[0];
-
-    setMinDate(formattedNextDay);
-  }, []);
 
   useEffect(() => {
     formik.setFieldValue(PICKUP_WALLET_ADDRESS_KEY, address);
@@ -193,7 +179,7 @@ const Pickup = () => {
           <div className="space-y-3">
             <Input
               id={PICKUP_MATERIAL_AMOUNT_KEY}
-              label="Number of Waste"
+              label="Number of Plastics"
               placeholder="Minimum of 50 pieces"
               {...getInputProps(PICKUP_MATERIAL_AMOUNT_KEY)}
               value={formatAmount(
@@ -211,43 +197,24 @@ const Pickup = () => {
               )}
               inputMode="numeric"
             />
-            <Input
-              id={PICKUP_ADDRESS_KEY}
-              label="Address"
-              placeholder="Enter your full address"
-              {...getInputProps(PICKUP_ADDRESS_KEY)}
-            />
-            <div className="space-y-2">
-              <InputLabel label="Contact Number" id={PICKUP_PHONE_KEY} />
-              <div className="flex space-x-3">
-                <div className="flex h-12 items-center space-x-1 rounded-lg border-2 border-gray-400 pl-3 pr-6">
-                  <img
-                    src="/assets/ng.png"
-                    alt="ng"
-                    className="relative aspect-square h-max w-4"
-                  />
-                  <p className="text-xs">
-                    +{formik.values[PICKUP_COUNTRY_CODE_KEY]}
-                  </p>
-                </div>
-                <Input
-                  id={PICKUP_PHONE_KEY}
-                  placeholder="800 000 0000"
-                  {...getInputProps(PICKUP_PHONE_KEY)}
-                  type="tel"
-                  inputMode="numeric"
-                />
+            <div>
+              <Select
+                id={PICKUP_ADDRESS_KEY}
+                label="Location"
+                placeholder="Select your location"
+                {...getInputProps(PICKUP_ADDRESS_KEY)}
+              />
+              <div className="mt-1 flex justify-end">
+                <button
+                  type="button"
+                  onClick={addressDrawerProps.onOpen}
+                  className="text-brand-primary text-xs font-semibold"
+                >
+                  Add address
+                </button>
               </div>
             </div>
           </div>
-          <Input
-            label="Pickup Date"
-            id={PICKUP_DATE_KEY}
-            placeholder="Pick a date"
-            {...getInputProps(PICKUP_DATE_KEY)}
-            type="date"
-            min={minDate}
-          />
           <Button
             isLoading={isLoadingSchedulePickup}
             className="mt-4"
@@ -257,6 +224,7 @@ const Pickup = () => {
           </Button>
         </form>
       </div>
+      <AddressDrawer {...addressDrawerProps} />
     </div>
   );
 };

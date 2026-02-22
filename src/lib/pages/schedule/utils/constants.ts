@@ -87,8 +87,8 @@ export const pickupValidationSchema = object().shape({
         return isValid || context.createError();
       }
     ),
-  [PICKUP_ADDRESS_KEY]: string().required('Kindly input a valid address'),
-  [PICKUP_PHONE_KEY]: string().required('Kindly input a valid phone number'),
-  [PICKUP_DATE_KEY]: string().required('Kindly select a valid pickup date'),
+  // [PICKUP_ADDRESS_KEY]: string().required('Kindly input a valid address'),
+  // [PICKUP_PHONE_KEY]: string().required('Kindly input a valid phone number'),
+  // [PICKUP_DATE_KEY]: string().required('Kindly select a valid pickup date'),
   [PICKUP_WALLET_ADDRESS_KEY]: string().required(),
 });

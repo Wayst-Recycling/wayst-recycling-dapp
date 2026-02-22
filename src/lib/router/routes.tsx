@@ -20,6 +20,17 @@ export const routes: Array<PathRouteProps> = [
     element: <Schedule />,
   },
   {
+    path: '/history',
+    element: <History />,
+  },
+  {
+    path: '/profile',
+    element: <Profile />,
+  },
+];
+
+export const privateRoutes: Array<PathRouteProps> = [
+  {
     path: '/schedule/pickup',
     element: <Pickup />,
   },
@@ -28,17 +39,7 @@ export const routes: Array<PathRouteProps> = [
     element: <Dropoff />,
   },
   {
-    path: '/history',
-    element: <History />,
-  },
-  {
-    path: '/profile',
-    element: <Profile />,
-  },
-  {
     path: '/daily-claim',
     element: <DailyClaim />,
   },
 ];
-
-export const privateRoutes: Array<PathRouteProps> = [];
