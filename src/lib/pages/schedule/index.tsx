@@ -1,6 +1,8 @@
 import { IoIosArrowRoundBack } from 'react-icons/io';
 import { Link, useNavigate } from 'react-router-dom';
 
+import ScheduleList from '../home/components/ScheduleList';
+
 const Schedule = () => {
   const navigate = useNavigate();
 
@@ -12,7 +14,6 @@ const Schedule = () => {
         </button>
         <p className="text-xl font-semibold">Schedule</p>
       </div>
-
       <Link
         to="/schedule/pickup"
         className="mt-5 flex w-full items-center space-x-2 rounded-xl bg-white text-start"
@@ -26,7 +27,6 @@ const Schedule = () => {
           </p>
         </div>
       </Link>
-
       <Link
         to="/schedule/dropoff"
         className="mt-5 flex w-full items-center space-x-2 rounded-xl bg-white text-start"
@@ -39,6 +39,10 @@ const Schedule = () => {
           </p>
         </div>
       </Link>
+      <div className="mt-10">
+        <p className="text-sm font-bold">Schedule History</p>
+        <ScheduleList />
+      </div>{' '}
     </div>
   );
 };

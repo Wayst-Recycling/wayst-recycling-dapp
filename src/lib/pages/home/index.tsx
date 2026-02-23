@@ -8,29 +8,26 @@ import { injected } from 'wagmi/connectors';
 import { useGetTotalEarning } from '../../../api/schedule';
 import { CurrencySelect } from '../../components/currencySelect';
 import { TotalEarningsTooltip } from '../../components/totalEarningsTooltip';
-import TransactionCard from '../../components/transactionCard';
 import { ROBO_URL } from '../../utils/index';
 import RegistrationDrawer from '../schedule/components/RegistrationDrawer';
 import useLoginMutation from '@/api/auth';
-import { useGetTransactions } from '@/api/transaction';
 import { useDisclosure } from '@/hooks/useDisclosure';
 import Button from '@/lib/components/buttons/button';
-import Loader from '@/lib/components/loader';
 import { getCookie, setCookie } from '@/lib/utils/cookies';
 import { formatcUsd } from '@/lib/utils/format';
 
 import FormatBalance from './components/FormatBalance';
+import ScheduleList from './components/ScheduleList';
+import TransactionList from './components/TransactionList';
 
 const Home = () => {
   const { address } = useAccount();
+
   const { connect } = useConnect();
   const navigate = useNavigate();
   const registrationDrawer = useDisclosure();
   const [pendingPath, setPendingPath] = useState<string | null>(null);
   const { mutateAsync: login } = useLoginMutation();
-
-  const { data: transactions, isPending: isLoadingGetTransactions } =
-    useGetTransactions({});
 
   const { data: totalEarning, isPending: isLoadingTotalEarning } =
     useGetTotalEarning();
@@ -217,6 +214,19 @@ const Home = () => {
 
             <div className="mt-4 flex flex-col space-y-3">
               <div className="flex items-center justify-between">
+                <p className="text-xl font-semibold">Schedule History</p>
+                <Link
+                  to="/schedule"
+                  className="rounded-full border bg-white p-1.5 shadow-md"
+                >
+                  <ChevronRight size={12} />
+                </Link>
+              </div>
+              <ScheduleList home />
+            </div>
+
+            <div className="mt-4 flex flex-col space-y-3">
+              <div className="flex items-center justify-between">
                 <p className="text-xl font-semibold">Transaction History</p>
                 <Link
                   to="/history"
@@ -225,30 +235,7 @@ const Home = () => {
                   <ChevronRight size={12} />
                 </Link>
               </div>
-              {transactions &&
-                !isLoadingGetTransactions &&
-                transactions.data
-                  .slice(0, 3)
-                  .map((transaction) => (
-                    <TransactionCard transaction={transaction} />
-                  ))}
-              {!transactions && isLoadingGetTransactions && <Loader />}
-              {!isLoadingGetTransactions && transactions?.total === 0 && (
-                <div className="mx-auto flex max-w-[60%] flex-col items-center text-center">
-                  <img
-                    className="mx-auto pt-10"
-                    src="/assets/garbage.png"
-                    alt="empty"
-                  />
-                  <p className="text-sm font-semibold">
-                    No transaction history
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    Your data history is currently empty. Start recycling today
-                    to see your impact.
-                  </p>
-                </div>
-              )}
+              <TransactionList home />
             </div>
           </div>
         )}

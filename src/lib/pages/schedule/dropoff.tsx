@@ -1,37 +1,24 @@
 import { useFormik } from 'formik';
-import { useEffect, useState } from 'react';
 import { IoIosArrowRoundBack } from 'react-icons/io';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { useAccount } from 'wagmi';
 
-import { useGetDropoffLocations, useScheduleDropoff } from '@/api/schedule';
+import { useGetDropoffLocations, useSchedulePickup } from '@/api/schedule';
 import Button from '@/lib/components/buttons/button';
 import { emitCommingSoonToast } from '@/lib/components/comingSoonToast';
 import Input from '@/lib/components/input/input';
-import InputLabel from '@/lib/components/input/inputLabel';
 import Select from '@/lib/components/input/select';
 import { handleApiError } from '@/lib/utils/error-handler';
 import { formatAmount, removeNonDigit } from '@/lib/utils/format';
-import {
-  PICKUP_MATERIAL,
-  SCHEDULE_REDUCER_PATH,
-} from '@/store/constants/schedule';
 import { setPickupMaterial } from '@/store/slices/schedule';
-import { useAppDispatch, useAppSelector } from '@/store/store';
+import { useAppDispatch } from '@/store/store';
 
 import MaterialSelectItem from './components/materialSelectItem';
 import {
-  PICKUP_ADDRESS_KEY,
+  dropoffInitialValues,
+  dropoffValidationSchema,
   PICKUP_CONTAINER_AMOUNT_KEY,
-  PICKUP_COUNTRY_CODE_KEY,
-  PICKUP_DATE_KEY,
   PICKUP_MATERIAL_AMOUNT_KEY,
-  PICKUP_MATERIAL_KEY,
-  PICKUP_PHONE_KEY,
-  PICKUP_WALLET_ADDRESS_KEY,
-  pickupInitialValues,
-  pickupValidationSchema,
 } from './utils/constants';
 import type { MaterialCategory } from './utils/types';
 
@@ -40,9 +27,7 @@ const Dropoff = () => {
   //     setSelectedMaterial(material);
   //     setError((prev) => ({ ...prev, material: false }));
   //   };
-  const { address } = useAccount();
 
-  const [minDate, setMinDate] = useState('');
   const materials: MaterialCategory[] = [
     {
       label: 'Plastic',
@@ -95,14 +80,10 @@ const Dropoff = () => {
     },
   ];
 
-  const { mutate: scheduleDropoff, isPending: isLoadingScheduleDropoff } =
-    useScheduleDropoff();
+  const { mutate: schedulePickup, isPending: isLoadingSchedulePickup } =
+    useSchedulePickup();
 
   const dispatch = useAppDispatch();
-
-  const { [PICKUP_MATERIAL]: pickupMaterial } = useAppSelector(
-    (state) => state[SCHEDULE_REDUCER_PATH]
-  );
 
   const {
     data: dropoffLocationsResponse,
@@ -111,13 +92,13 @@ const Dropoff = () => {
 
   const locations = dropoffLocationsResponse?.data.map((location) => ({
     value: location.id,
-    label: `${location.address}, ${location.region}, ${location.state}`,
+    label: `${location.address}, ${location.city}, ${location.region}`,
   }));
 
   const formik = useFormik({
-    initialValues: pickupInitialValues,
-    validationSchema: pickupValidationSchema,
-    onSubmit: (values) => {
+    initialValues: dropoffInitialValues,
+    validationSchema: dropoffValidationSchema,
+    onSubmit: async (values) => {
       const newValues = {
         ...values,
         [PICKUP_MATERIAL_AMOUNT_KEY]: Number(
@@ -128,15 +109,9 @@ const Dropoff = () => {
         ),
       };
       try {
-        scheduleDropoff(newValues, {
-          onSuccess: (res) => {
-            formik.resetForm();
-            toast.success(res.message);
-          },
-          onError: (err) => {
-            handleApiError(err, 'Something went wrong');
-          },
-        });
+        const res = await schedulePickup(newValues);
+        formik.resetForm();
+        toast.success(res.message);
       } catch (err) {
         handleApiError(err, 'Something went wrong');
       }
@@ -158,22 +133,6 @@ const Dropoff = () => {
     };
   }
 
-  useEffect(() => {
-    const today = new Date();
-
-    const nextDay = new Date(today);
-    nextDay.setDate(today.getDate() + 1);
-
-    const formattedNextDay = nextDay.toISOString().split('T')[0];
-
-    setMinDate(formattedNextDay);
-  }, []);
-
-  useEffect(() => {
-    formik.setFieldValue(PICKUP_WALLET_ADDRESS_KEY, address);
-    formik.setFieldValue(PICKUP_MATERIAL_KEY, pickupMaterial);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address, pickupMaterial]);
   const navigate = useNavigate();
 
   return (
@@ -228,50 +187,20 @@ const Dropoff = () => {
               inputMode="numeric"
             />
             <Select
-              id={PICKUP_ADDRESS_KEY}
+              id="dropoffAddress"
               label="Select dropoff location"
               placeholder="Select Location"
-              {...getSelectProps(PICKUP_ADDRESS_KEY)}
+              {...getSelectProps('dropoffAddress')}
               options={locations}
               isLoading={isLoadingDropoffLocations}
             />
-            <div className="space-y-2">
-              <InputLabel label="Contact Number" id={PICKUP_PHONE_KEY} />
-              <div className="flex space-x-3">
-                <div className="flex h-12 items-center space-x-1 rounded-lg border-2 border-gray-400 pl-3 pr-6">
-                  <img
-                    src="/assets/ng.png"
-                    alt="ng"
-                    className="relative aspect-square h-max w-4"
-                  />
-                  <p className="text-xs">
-                    +{formik.values[PICKUP_COUNTRY_CODE_KEY]}
-                  </p>
-                </div>
-                <Input
-                  id={PICKUP_PHONE_KEY}
-                  placeholder="800 000 0000"
-                  {...getInputProps(PICKUP_PHONE_KEY)}
-                  type="tel"
-                  inputMode="numeric"
-                />
-              </div>
-            </div>
           </div>
-          <Input
-            label="Dropoff Date"
-            id={PICKUP_DATE_KEY}
-            placeholder="Pick a date"
-            {...getInputProps(PICKUP_DATE_KEY)}
-            type="date"
-            min={minDate}
-          />
           <Button
-            isLoading={isLoadingScheduleDropoff}
+            isLoading={isLoadingSchedulePickup}
             className="mt-4"
             type="submit"
           >
-            Schedule Pickup
+            Schedule Dropoff
           </Button>
         </form>
       </div>

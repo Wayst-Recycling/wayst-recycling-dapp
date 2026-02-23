@@ -25,7 +25,7 @@ type Props = {
   onClose: () => void;
 };
 const AddressDrawer = ({ isOpen, onClose }: Props) => {
-  const { formik, isLoading, getSelectProps } = useCreateAddress({ onClose });
+  const { formik, isPending, getSelectProps } = useCreateAddress({ onClose });
 
   const [predictions, setPredictions] = useState<
     {
@@ -122,7 +122,7 @@ const AddressDrawer = ({ isOpen, onClose }: Props) => {
               )}
             </CommandList>
           </Command>
-          <Button type="submit" isLoading={isLoading} className="mt-4 w-full">
+          <Button type="submit" isLoading={isPending} className="mt-4 w-full">
             Add Address
           </Button>
         </form>

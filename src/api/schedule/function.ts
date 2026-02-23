@@ -1,19 +1,33 @@
 import type { RPaginated, ApiResponse } from '../api.types';
 import http from '../http';
 
-import type { Schedule, TLocation } from './types';
+import type {
+  ICreateAddress,
+  Schedule,
+  TDeliveryAddress,
+  TLocation,
+} from './types';
 
 export const postSchedulePickup = async (data: {
-  oxAddress: string;
   material: string;
   materialAmount: number;
+  category: string;
   containerAmount: number;
-  address: string;
-  date: string;
-  dialCode: string;
-  phone: string;
+  pickupAddress?: string;
+  dropoffAddress?: string;
 }): Promise<ApiResponse<unknown>> => {
-  return http.post('/schedule/pickup', data);
+  const res = await http.post<ApiResponse<unknown>>('/schedule', data);
+  return res.data;
+};
+
+export const postCreateDeliveryAddress = async (
+  data: ICreateAddress
+): Promise<ApiResponse<unknown>> => {
+  const res = await http.post<ApiResponse<unknown>>(
+    '/user/delivery-address',
+    data
+  );
+  return res.data;
 };
 
 export const postScheduleDropoff = async (data: {
@@ -26,16 +40,34 @@ export const postScheduleDropoff = async (data: {
   dialCode: string;
   phone: string;
 }): Promise<ApiResponse<unknown>> => {
-  return http.post('/schedule/dropoff', data);
+  const res = await http.post<ApiResponse<unknown>>('/schedule/dropoff', data);
+  return res.data;
 };
 
-export const getSchedules = async (ox: string): Promise<Schedule[]> => {
-  const res = await http.get<ApiResponse<Schedule[]>>(`/schedule/${ox}`);
+export const getSchedules = async (params?: {
+  page?: number;
+  limit?: number;
+}): Promise<RPaginated<Schedule>> => {
+  const queryString = new URLSearchParams();
+  if (params?.page) queryString.append('page', params.page.toString());
+  if (params?.limit) queryString.append('limit', params.limit.toString());
+
+  const res = await http.get<ApiResponse<RPaginated<Schedule>>>(
+    `/schedule?${queryString.toString()}`
+  );
+  return res.data.data;
+};
+
+export const getDeliveryAddresses = async (): Promise<TDeliveryAddress[]> => {
+  const res = await http.get<ApiResponse<TDeliveryAddress[]>>(
+    `/user/delivery-address`
+  );
   return res.data.data;
 };
 
 export const getDropoffLocations = async (): Promise<RPaginated<TLocation>> => {
-  const res = await http.get<ApiResponse<RPaginated<TLocation>>>(`/location`);
+  const res =
+    await http.get<ApiResponse<RPaginated<TLocation>>>(`/admin/location`);
   return res.data.data;
 };
 

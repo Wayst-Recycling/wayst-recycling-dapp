@@ -3,6 +3,8 @@ import axios from 'axios';
 
 import type { ApiError } from './api.types';
 
+import { getCookie, removeCookie } from '@/lib/utils/cookies';
+
 const http = axios.create({
   baseURL: `${import.meta.env.VITE_API_URL}/v1`,
   withCredentials: false,
@@ -13,11 +15,7 @@ const http = axios.create({
 });
 
 http.interceptors.request.use((config) => {
-  // Use a helper or direct cookie access to get the token
-  const token = document.cookie
-    .split('; ')
-    .find((row) => row.startsWith('accessToken='))
-    ?.split('=')[1];
+  const token = getCookie('accessToken');
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -30,6 +28,10 @@ http.interceptors.response.use(
   (response) => response,
   (error) => {
     if (axios.isAxiosError(error) && error.response) {
+      if (error.response.status === 401) {
+        removeCookie('accessToken');
+        window.location.href = '/';
+      }
       const apiError = error.response.data as ApiError;
       return Promise.reject(apiError);
     }

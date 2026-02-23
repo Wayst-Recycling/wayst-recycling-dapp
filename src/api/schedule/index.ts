@@ -1,13 +1,16 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 import {
+  getDeliveryAddresses,
   getDropoffLocations,
   getSchedules,
   getTotalEarning,
+  postCreateDeliveryAddress,
   postScheduleDropoff,
   postSchedulePickup,
 } from './function';
 import {
+  GET_DELIVERY_ADDRESSES_KEY,
   GET_DROPOFF_LOCATIONS_KEY,
   GET_SCHEDULES_KEY,
   GET_TOTAL_EARNING_KEY,
@@ -15,7 +18,7 @@ import {
 
 export const useSchedulePickup = () => {
   const {
-    mutate,
+    mutateAsync: mutate,
     isPending,
     isError,
     error,
@@ -24,12 +27,19 @@ export const useSchedulePickup = () => {
     mutationFn: postSchedulePickup,
   });
 
-  return { mutate, isPending, isError, error, schedulePickupSucces };
+  return {
+    mutate,
+    isPending,
+    isError,
+    error,
+    schedulePickupSucces,
+    mutateAsync: mutate,
+  };
 };
 
 export const useScheduleDropoff = () => {
   const {
-    mutate,
+    mutateAsync: mutate,
     isPending,
     isError,
     error,
@@ -38,13 +48,20 @@ export const useScheduleDropoff = () => {
     mutationFn: postScheduleDropoff,
   });
 
-  return { mutate, isPending, isError, error, scheduleDropoffSuccess };
+  return {
+    mutate,
+    isPending,
+    isError,
+    error,
+    scheduleDropoffSuccess,
+    mutateAsync: mutate,
+  };
 };
 
-export const useGetSchedules = (ox: string) => {
+export const useGetSchedules = (params?: { page?: number; limit?: number }) => {
   const { data, isPending } = useQuery({
-    queryKey: [GET_SCHEDULES_KEY],
-    queryFn: () => getSchedules(ox),
+    queryKey: [GET_SCHEDULES_KEY, params],
+    queryFn: () => getSchedules(params),
   });
 
   return { data, isPending };
@@ -63,6 +80,29 @@ export const useGetTotalEarning = () => {
   const { data, isPending } = useQuery({
     queryKey: [GET_TOTAL_EARNING_KEY],
     queryFn: () => getTotalEarning(),
+  });
+
+  return { data, isPending };
+};
+
+export const useCreateDeliveryAddress = () => {
+  const {
+    mutateAsync: mutate,
+    isPending,
+    isError,
+    error,
+    isSuccess: createDeliveryAddressSuccess,
+  } = useMutation({
+    mutationFn: postCreateDeliveryAddress,
+  });
+
+  return { mutate, isPending, isError, error, createDeliveryAddressSuccess };
+};
+
+export const useGetDeliveryAddresses = () => {
+  const { data, isPending } = useQuery({
+    queryKey: [GET_DELIVERY_ADDRESSES_KEY],
+    queryFn: () => getDeliveryAddresses(),
   });
 
   return { data, isPending };

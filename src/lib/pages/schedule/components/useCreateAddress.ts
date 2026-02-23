@@ -2,9 +2,12 @@ import { useFormik } from 'formik';
 import { toast } from 'react-toastify';
 import { object, string } from 'yup';
 
+import { useCreateDeliveryAddress } from '@/api/schedule';
+import { handleApiError } from '@/lib/utils/error-handler';
+
 export const useCreateAddress = ({ onClose }: { onClose: () => void }) => {
-  //   const [createDeliveryAddress, { isLoading }] =
-  //     useCreateDeliveryAddressMutation();
+  const { mutate: createDeliveryAddress, isPending } =
+    useCreateDeliveryAddress();
 
   const formik = useFormik({
     initialValues: {
@@ -27,19 +30,19 @@ export const useCreateAddress = ({ onClose }: { onClose: () => void }) => {
     enableReinitialize: true,
     onSubmit: async (values) => {
       try {
-        // await createDeliveryAddress({
-        //   address: values.description,
-        //   region: values.region,
-        //   city: values.city,
-        //   state: values.state,
-        //   long: values.long.toString(),
-        //   lat: values.lat.toString(),
-        // }).unwrap();
+        await createDeliveryAddress({
+          address: values.description,
+          region: values.region,
+          city: values.city,
+          state: values.state,
+          long: values.long.toString(),
+          lat: values.lat.toString(),
+        });
         formik.resetForm();
         toast.success('Address created successfully');
         onClose();
       } catch (err) {
-        // handleErrors(err);
+        handleApiError(err);
       }
     },
   });
@@ -59,5 +62,5 @@ export const useCreateAddress = ({ onClose }: { onClose: () => void }) => {
     };
   }
 
-  return { getInputProps, getSelectProps, formik };
+  return { getInputProps, getSelectProps, formik, isPending };
 };

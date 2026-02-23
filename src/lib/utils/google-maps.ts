@@ -1,8 +1,8 @@
-import { setOptions, importLibrary } from '@googlemaps/js-api-loader';
+import { importLibrary } from '@googlemaps/js-api-loader';
 
 import logger from './logger';
 
-setOptions({ key: import.meta.env.VITE_GOOGLE_AUTOCOMPLETE || '' });
+// setOptions({ key: import.meta.env.VITE_GOOGLE_AUTOCOMPLETE || '' });
 
 let autocompleteService: google.maps.places.AutocompleteService | null = null;
 let placesService: google.maps.places.PlacesService | null = null;

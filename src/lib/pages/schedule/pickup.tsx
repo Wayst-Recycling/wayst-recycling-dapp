@@ -3,9 +3,8 @@ import { useEffect } from 'react';
 import { IoIosArrowRoundBack } from 'react-icons/io';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { useAccount } from 'wagmi';
 
-import { useSchedulePickup } from '@/api/schedule';
+import { useGetDeliveryAddresses, useSchedulePickup } from '@/api/schedule';
 import { useDisclosure } from '@/hooks/useDisclosure';
 import Button from '@/lib/components/buttons/button';
 import { emitCommingSoonToast } from '@/lib/components/comingSoonToast';
@@ -23,11 +22,9 @@ import { useAppDispatch, useAppSelector } from '@/store/store';
 import AddressDrawer from './components/AddressDrawer';
 import MaterialSelectItem from './components/materialSelectItem';
 import {
-  PICKUP_ADDRESS_KEY,
   PICKUP_CONTAINER_AMOUNT_KEY,
   PICKUP_MATERIAL_AMOUNT_KEY,
   PICKUP_MATERIAL_KEY,
-  PICKUP_WALLET_ADDRESS_KEY,
   pickupInitialValues,
   pickupValidationSchema,
 } from './utils/constants';
@@ -38,7 +35,6 @@ const Pickup = () => {
   //     setSelectedMaterial(material);
   //     setError((prev) => ({ ...prev, material: false }));
   //   };
-  const { address } = useAccount();
 
   const materials: MaterialCategory[] = [
     {
@@ -97,16 +93,13 @@ const Pickup = () => {
 
   const dispatch = useAppDispatch();
 
-  const { [PICKUP_MATERIAL]: pickupMaterial } = useAppSelector(
-    (state) => state[SCHEDULE_REDUCER_PATH]
-  );
-
   const addressDrawerProps = useDisclosure();
 
   const formik = useFormik({
     initialValues: pickupInitialValues,
     validationSchema: pickupValidationSchema,
-    onSubmit: (values) => {
+    enableReinitialize: true,
+    onSubmit: async (values) => {
       const newValues = {
         ...values,
         [PICKUP_MATERIAL_AMOUNT_KEY]: Number(
@@ -117,15 +110,9 @@ const Pickup = () => {
         ),
       };
       try {
-        schedulePickup(newValues, {
-          onSuccess: (res) => {
-            formik.resetForm();
-            toast.success(res.message);
-          },
-          onError: (err) => {
-            handleApiError(err, 'Something went wrong');
-          },
-        });
+        const res = await schedulePickup(newValues);
+        formik.resetForm();
+        toast.success(res.message);
       } catch (err) {
         handleApiError(err, 'Something went wrong');
       }
@@ -138,12 +125,26 @@ const Pickup = () => {
       ...formik.getFieldMeta(id),
     };
   }
+  function getSelectProps(id: keyof typeof formik.values) {
+    return {
+      ...formik.getFieldProps(id),
+      ...formik.getFieldMeta(id),
+      ...formik.getFieldHelpers(id),
+    };
+  }
+
+  const { data: deliveryAddresses, isPending: isLoadingDeliveryAddresses } =
+    useGetDeliveryAddresses();
+
+  const { [PICKUP_MATERIAL]: pickupMaterial } = useAppSelector(
+    (state) => state[SCHEDULE_REDUCER_PATH]
+  );
 
   useEffect(() => {
-    formik.setFieldValue(PICKUP_WALLET_ADDRESS_KEY, address);
     formik.setFieldValue(PICKUP_MATERIAL_KEY, pickupMaterial);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address, pickupMaterial]);
+  }, [pickupMaterial]);
+
   const navigate = useNavigate();
 
   return (
@@ -199,10 +200,15 @@ const Pickup = () => {
             />
             <div>
               <Select
-                id={PICKUP_ADDRESS_KEY}
+                id="pickupAddress"
                 label="Location"
                 placeholder="Select your location"
-                {...getInputProps(PICKUP_ADDRESS_KEY)}
+                isLoading={isLoadingDeliveryAddresses}
+                options={deliveryAddresses?.map((add) => ({
+                  label: add.address,
+                  value: add.id,
+                }))}
+                {...getSelectProps('pickupAddress')}
               />
               <div className="mt-1 flex justify-end">
                 <button

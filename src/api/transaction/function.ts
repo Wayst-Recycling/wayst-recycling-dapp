@@ -7,12 +7,14 @@ import type { Transaction } from './types';
 export const getTransactions = async ({
   params,
 }: {
-  params?: { type?: string; page?: number; limit?: number };
+  params?: { page?: number; limit?: number };
 }): Promise<RPaginated<Transaction>> => {
   const queryString = new URLSearchParams();
-  if (params?.type) queryString.append('type', params.type.toString());
+  if (params?.page) queryString.append('page', params.page.toString());
+  if (params?.limit) queryString.append('limit', params.limit.toString());
 
-  const res =
-    await http.get<ApiResponse<RPaginated<Transaction>>>(`/transaction`);
+  const res = await http.get<ApiResponse<RPaginated<Transaction>>>(
+    `/transaction?${queryString.toString()}`
+  );
   return res.data.data;
 };
