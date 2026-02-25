@@ -9,11 +9,16 @@ const AuthWatcher = () => {
   const { address } = useAccount();
   const { mutateAsync: login } = useLoginMutation();
   const prevAddressRef = useRef(address);
+  const attemptedAddressRef = useRef<string | null>(null);
 
   useEffect(() => {
     const token = getCookie('accessToken');
 
     const handleLogoutAndLogin = async (newAddress: string) => {
+      // Don't retry if we already attempted for this address in this session
+      if (attemptedAddressRef.current === newAddress) return;
+      attemptedAddressRef.current = newAddress;
+
       removeCookie('accessToken');
       try {
         const res = await login({ oxAddress: newAddress });
@@ -25,7 +30,6 @@ const AuthWatcher = () => {
       } catch (err) {
         // Only error if we actually tried to change address or were previously logged in
         if (prevAddressRef.current === newAddress) {
-          // This was likely an auto-login attempt that failed
           console.error('Auto-login failed', err);
         } else {
           toast.error('Failed to re-authenticate with new wallet');

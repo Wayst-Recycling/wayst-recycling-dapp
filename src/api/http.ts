@@ -1,9 +1,9 @@
 /* eslint-disable no-param-reassign */
 import axios from 'axios';
 
-import type { ApiError } from './api.types';
-
 import { getCookie, removeCookie } from '@/lib/utils/cookies';
+
+import type { ApiError } from './api.types';
 
 const http = axios.create({
   baseURL: `${import.meta.env.VITE_API_URL}/v1`,
@@ -30,7 +30,9 @@ http.interceptors.response.use(
     if (axios.isAxiosError(error) && error.response) {
       if (error.response.status === 401) {
         removeCookie('accessToken');
-        window.location.href = '/';
+        if (window.location.pathname !== '/') {
+          window.location.href = '/';
+        }
       }
       const apiError = error.response.data as ApiError;
       return Promise.reject(apiError);
