@@ -11,9 +11,11 @@ import { TotalEarningsTooltip } from '../../components/totalEarningsTooltip';
 import { ROBO_URL } from '../../utils/index';
 import RegistrationDrawer from '../schedule/components/RegistrationDrawer';
 import useLoginMutation from '@/api/auth';
+import { useClaimDailyReward } from '@/api/daily-claim';
 import { useDisclosure } from '@/hooks/useDisclosure';
 import Button from '@/lib/components/buttons/button';
 import { getCookie, setCookie } from '@/lib/utils/cookies';
+import { handleApiError } from '@/lib/utils/error-handler';
 import { formatcUsd } from '@/lib/utils/format';
 
 import FormatBalance from './components/FormatBalance';
@@ -32,7 +34,8 @@ const Home = () => {
   const { data: totalEarning, isPending: isLoadingTotalEarning } =
     useGetTotalEarning();
 
-  // const { mutate: claimReward, } = useClaimDailyReward()
+  const { mutate: claimReward, isPending: isLoadingClaimReward } =
+    useClaimDailyReward();
   // const { writeContract, isPending, isError, isSuccess, isIdle, error } = useWriteContract()
   // const { data: dailyReached, isLoading: isLoading1 } = useReadContract({
   //     abi: CARUSABI,
@@ -187,7 +190,18 @@ const Home = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleActionClick('/daily-claim')}
+                  disabled={isLoadingClaimReward}
+                  style={{
+                    filter: isLoadingClaimReward ? 'grayscale(100%)' : '',
+                  }}
+                  onClick={async () => {
+                    try {
+                      await claimReward({ currency: 'gd' });
+                      toast.success('Daily claim successful');
+                    } catch (error) {
+                      handleApiError(error);
+                    }
+                  }}
                   className="flex flex-col items-center rounded-xl bg-white py-3"
                 >
                   <img

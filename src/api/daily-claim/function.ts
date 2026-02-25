@@ -4,9 +4,10 @@ import http from '../http';
 import type { Transaction } from './types';
 
 export const postClaimDailyReward = async (data: {
-  oxAddress: string;
+  currency: string;
 }): Promise<ApiResponse<unknown>> => {
-  return http.post('/transaction/daily-claim', data);
+  const res = await http.post('/transaction/daily-claim', data);
+  return res.data;
 };
 
 export const getDailyClaim = async (ox: string): Promise<Transaction[]> => {

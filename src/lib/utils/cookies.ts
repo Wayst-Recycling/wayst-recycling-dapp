@@ -8,6 +8,7 @@ export const setCookie = (
   Cookies.set(name, value, {
     secure: true,
     sameSite: 'strict',
+    expires: 1, // Default to 24 hours (1 day)
     ...options,
   });
 };
