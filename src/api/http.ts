@@ -30,9 +30,9 @@ http.interceptors.response.use(
     if (axios.isAxiosError(error) && error.response) {
       if (error.response.status === 401) {
         removeCookie('accessToken');
-        if (window.location.pathname !== '/') {
-          window.location.href = '/';
-        }
+        // if (window.location.pathname !== '/') {
+        //   window.location.href = '/';
+        // }
       }
       const apiError = error.response.data as ApiError;
       return Promise.reject(apiError);
