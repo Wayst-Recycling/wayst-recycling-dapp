@@ -1,4 +1,7 @@
+import type { UseQueryOptions } from '@tanstack/react-query';
 import { useMutation, useQuery } from '@tanstack/react-query';
+
+import type { RPaginated } from '../api.types';
 
 import {
   getDeliveryAddresses,
@@ -9,6 +12,7 @@ import {
   postScheduleDropoff,
   postSchedulePickup,
 } from './function';
+import type { Schedule, TLocation } from './types';
 import {
   GET_DELIVERY_ADDRESSES_KEY,
   GET_DROPOFF_LOCATIONS_KEY,
@@ -58,28 +62,38 @@ export const useScheduleDropoff = () => {
   };
 };
 
-export const useGetSchedules = (params?: { page?: number; limit?: number }) => {
+export const useGetSchedules = (
+  params?: { page?: number; limit?: number },
+  options?: Partial<UseQueryOptions<RPaginated<Schedule>, Error>>
+) => {
   const { data, isPending } = useQuery({
     queryKey: [GET_SCHEDULES_KEY, params],
     queryFn: () => getSchedules(params),
+    ...options,
   });
 
   return { data, isPending };
 };
 
-export const useGetDropoffLocations = () => {
+export const useGetDropoffLocations = (
+  options?: Partial<UseQueryOptions<RPaginated<TLocation>, Error>>
+) => {
   const { data, isPending } = useQuery({
     queryKey: [GET_DROPOFF_LOCATIONS_KEY],
     queryFn: () => getDropoffLocations(),
+    ...options,
   });
 
   return { data, isPending };
 };
 
-export const useGetTotalEarning = () => {
+export const useGetTotalEarning = (
+  options?: Partial<UseQueryOptions<{ cusd: number; gd: number }, Error>>
+) => {
   const { data, isPending } = useQuery({
     queryKey: [GET_TOTAL_EARNING_KEY],
     queryFn: () => getTotalEarning(),
+    ...options,
   });
 
   return { data, isPending };
