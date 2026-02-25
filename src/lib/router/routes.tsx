@@ -1,7 +1,6 @@
 import React from 'react';
 import type { PathRouteProps } from 'react-router-dom';
 
-import DailyClaim from '../pages/daily-claim';
 import History from '../pages/history';
 import Profile from '../pages/profile';
 import Schedule from '../pages/schedule';
@@ -20,14 +19,6 @@ export const routes: Array<PathRouteProps> = [
     element: <Schedule />,
   },
   {
-    path: '/schedule/pickup',
-    element: <Pickup />,
-  },
-  {
-    path: '/schedule/dropoff',
-    element: <Dropoff />,
-  },
-  {
     path: '/history',
     element: <History />,
   },
@@ -35,10 +26,19 @@ export const routes: Array<PathRouteProps> = [
     path: '/profile',
     element: <Profile />,
   },
-  {
-    path: '/daily-claim',
-    element: <DailyClaim />,
-  },
 ];
 
-export const privateRoutes: Array<PathRouteProps> = [];
+export const privateRoutes: Array<PathRouteProps> = [
+  {
+    path: '/schedule/pickup',
+    element: <Pickup />,
+  },
+  {
+    path: '/schedule/dropoff',
+    element: <Dropoff />,
+  },
+  // {
+  //   path: '/daily-claim',
+  //   element: <DailyClaim />,
+  // },
+];

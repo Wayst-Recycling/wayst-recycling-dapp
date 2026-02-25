@@ -1,12 +1,7 @@
-import { useEffect } from 'react';
-import { useConnect } from 'wagmi';
-import { injected } from 'wagmi/connectors';
-
 export default function Header() {
-  const { connect } = useConnect();
-  useEffect(() => {
-    connect({ connector: injected() });
-  }, [connect]);
+  // No auto-connect here anymore. Handled on home page or manually.
+
+  // Automatic login moved to Home page actions to prevent redundant calls
   return <div className="bg-[#F3F3F3]"> </div>;
 }
 

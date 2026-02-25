@@ -1,5 +1,6 @@
 import { Check, ChevronDown } from 'lucide-react';
 import * as React from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import { cn } from '../styles/utils';
 
@@ -15,15 +16,28 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
 const currencies = [
   {
-    value: 'ngn',
+    value: 'cusd',
     label: (
       <div className="flex items-center space-x-1">
         <img
-          src="/assets/ng.png"
-          alt="ng"
+          src="/assets/cusd.svg"
+          alt="cusd"
           className="relative aspect-square w-4"
         />
-        <p className="text-xs font-medium">Nigerian Naira ~ NGN</p>
+        <p className="text-xs font-medium">Celo Dollar ~ cUSD</p>
+      </div>
+    ),
+  },
+  {
+    value: 'gooddollar',
+    label: (
+      <div className="flex items-center space-x-1">
+        <img
+          src="/assets/gooddollar.svg"
+          alt="gooddollar"
+          className="relative aspect-square w-4"
+        />
+        <p className="text-xs font-medium">GoodDollar ~ G$</p>
       </div>
     ),
   },
@@ -31,7 +45,8 @@ const currencies = [
 
 export function CurrencySelect() {
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const value = searchParams.get('currency') || 'cusd';
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -45,7 +60,7 @@ export function CurrencySelect() {
         >
           {value
             ? currencies.find((currency) => currency.value === value)?.label
-            : currencies[0].label}
+            : currencies.find((c) => c.value === 'cusd')?.label}
           <ChevronDown className="ml-2 h-4 w-4 shrink-0" />
         </button>
       </PopoverTrigger>
@@ -60,11 +75,13 @@ export function CurrencySelect() {
                   key={currency.value}
                   value={currency.value}
                   onSelect={(currentValue) => {
-                    setValue(currentValue === value ? '' : currentValue);
+                    setSearchParams({ currency: currentValue });
                     setOpen(false);
                   }}
                 >
-                  <Check className={cn('mr-2 h-4 w-4 opacity-100')} />
+                  {value === currency.value && (
+                    <Check className={cn('mr-2 h-4 w-4 opacity-100')} />
+                  )}
                   {currency.label}
                 </CommandItem>
               ))}

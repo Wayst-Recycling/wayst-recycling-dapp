@@ -1,5 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import { GET_TOTAL_EARNING_KEY } from '../schedule/types';
+import { GET_TRANSACTIONS_KEY } from '../transaction/types';
+
 import { getDailyClaim, postClaimDailyReward } from './function';
 import { GET_DAILY_CLAIM_KEY } from './types';
 
@@ -7,20 +10,20 @@ export const useClaimDailyReward = () => {
   const queryClient = useQueryClient();
 
   const {
-    mutate,
+    mutateAsync: mutate,
     isPending,
     isError,
     error,
-    isSuccess: schedulePickupSucces,
+    isSuccess: claimDailyRewardSucces,
   } = useMutation({
     mutationFn: postClaimDailyReward,
     onSuccess: () =>
       queryClient.invalidateQueries({
-        queryKey: [GET_DAILY_CLAIM_KEY],
+        queryKey: [GET_TRANSACTIONS_KEY, GET_TOTAL_EARNING_KEY],
       }),
   });
 
-  return { mutate, isPending, isError, error, schedulePickupSucces };
+  return { mutate, isPending, isError, error, claimDailyRewardSucces };
 };
 
 export const useGetDailyClaim = (ox: string) => {
