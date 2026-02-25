@@ -49,7 +49,7 @@ const AuthWatcher = () => {
     // Case 2: Wallet disconnected but we have a token
     else if (prevAddressRef.current && !address && token) {
       removeCookie('accessToken');
-      window.location.href = '/';
+      // window.location.href = '/';
     }
     // Case 3: Address exists but no token (e.g. after 401 logout or fresh load)
     else if (address && !token) {
