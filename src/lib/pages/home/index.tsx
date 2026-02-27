@@ -99,9 +99,9 @@ const Home = () => {
 
   const [searchParams] = useSearchParams();
   const value = searchParams.get('currency') || 'cusd';
+  const accessToken = getCookie('accessToken');
 
   const handleActionClick = async (path: string) => {
-    const accessToken = getCookie('accessToken');
     if (accessToken) {
       navigate(path);
       return;
@@ -195,11 +195,18 @@ const Home = () => {
                     filter: isLoadingClaimReward ? 'grayscale(100%)' : '',
                   }}
                   onClick={async () => {
-                    try {
-                      await claimReward({ currency: 'gd' });
-                      toast.success('Daily claim successful');
-                    } catch (error) {
-                      handleApiError(error);
+                    if (accessToken) {
+                      try {
+                        await claimReward({ currency: 'gd' });
+                        toast.success('Daily claim successful');
+                        return;
+                      } catch (error) {
+                        handleApiError(error);
+                      }
+                    }
+
+                    if (!accessToken) {
+                      registrationDrawer.onOpen();
                     }
                   }}
                   className="flex flex-col items-center rounded-xl bg-white py-3"
